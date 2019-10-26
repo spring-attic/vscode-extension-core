@@ -1,0 +1,29 @@
+= Generic purpose library for VSCode extensions
+
+This library is meant to have a collection of extension utilities to ease development of
+a VSCode extensions.
+
+[NOTE]
+====
+This project is currently in incubation.
+====
+
+Generic build process is:
+
+[source,bash,indent=0]
+----
+$ rm package-lock.json
+$ npm install
+$ npm pack
+----
+
+== Code of Conduct
+This project adheres to the Contributor Covenant
+link:CODE_OF_CONDUCT.adoc[code of conduct].
+By participating, you  are expected to uphold this code. Please report
+unacceptable behavior to spring-code-of-conduct@pivotal.io.
+
+== License
+Spring Dsl is Open Source software released under the
+http://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].
+

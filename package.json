@@ -1,0 +1,40 @@
+{
+  "name": "@pivotal-tools/vscode-extension-core",
+  "version": "0.0.1",
+  "description": "vscode-extension-core",
+  "license": "MIT",
+  "repository": "",
+  "author": "Janne Valkealahti <janne.valkealahti@gmail.com>",
+  "engines": {
+    "npm": "^3.0.0",
+    "vscode": "^1.37.0"
+  },
+  "keywords": [],
+  "files": [
+    "src",
+    "lib",
+    "icons"
+  ],
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf lib node_modules package-lock.json",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "prepack": "npm run compile",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js",
+    "publish:next": "npm version $(semver $npm_package_version)-next.$(git rev-parse --short HEAD) -no-git-tag-version && npm pack && npm publish pivotal-tools-vscode-extension-core-$(semver $npm_package_version)-next.$(git rev-parse --short HEAD).tgz --tag next --registry https://repo.spring.io/api/npm/npm-snapshot-local && npm version $(semver $npm_package_version) -no-git-tag-version"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.1.13",
+    "vscode-languageclient": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/keytar": "^4.4.0",
+    "@types/node": "^7.0.43",
+    "@types/vscode": "^1.37.0",
+    "typescript": "^3.3.1",
+    "vscode-test": "^1.2.0"
+  }
+}
