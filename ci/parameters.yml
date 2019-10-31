@@ -1,0 +1,8 @@
+email-server: "smtp.svc.pivotal.io"
+email-from: "ci@spring.io"
+email-to: ["jvalkealahti@pivotal.io"]
+github-repo: "https://github.com/spring-projects-experimental/vscode-extension-core.git"
+github-repo-raw: "https://raw.githubusercontent.com/spring-projects-experimental/vscode-extension-core"
+artifactory-server: "https://repo.spring.io/"
+branch: "master"
+build-name: "vscode-extension-core"

@@ -1,0 +1,13 @@
+platform: linux
+inputs:
+- name: git-repo
+outputs:
+- name: triggers
+run:
+  path: bash
+  args:
+    - -exc
+    - |
+      ${PWD}/git-repo/ci/scripts/vscode-extension-core-publish.sh
+params:
+  NPM_TOKEN_REPO_SPRING_IO: ((npm-token-repo-spring-io))

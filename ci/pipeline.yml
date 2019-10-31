@@ -1,0 +1,66 @@
+#################################################
+# Resources
+#################################################
+resources:
+
+- name: git-repo
+  type: git
+  source:
+    uri: ((github-repo))
+    branch: ((branch))
+    ignore_paths: ["ci/images/*"]
+
+- name: ci-images-git-repo
+  type: git
+  source:
+    uri: ((github-repo))
+    branch: ((branch))
+    paths: ["ci/images/*"]
+
+- name: vscode-extension-core-ci-image
+  type: docker-image
+  source:
+    repository: springsource-docker-private-local.jfrog.io/vscode-extension-core-ci-image
+    username: ((artifactory-username))
+    password: ((artifactory-password))
+    tag: ((branch))
+
+- name: vscode-extension-core-trigger
+  type: s3
+  source:
+    bucket: ((spr-artifacts-s3-bucket-name))
+    regexp: triggers/((build-name))/trigger-(.*)
+    access_key_id: ((spr-s3-access-key-id))
+    secret_access_key: ((spr-s3-secret-access-key))
+    region_name: us-west-1
+#################################################
+# Jobs
+#################################################
+jobs:
+
+- name: vscode-extension-core-ci-images
+  plan:
+  - get: ci-images-git-repo
+    trigger: true
+  - put: vscode-extension-core-ci-image
+    params:
+      build: ci-images-git-repo/ci/images/vscode-extension-core-ci-image
+      build_args:
+        BRANCH: ((branch))
+
+- name: publish-vscode-extension-core
+  plan:
+  - get: vscode-extension-core-ci-image
+    passed:
+    - vscode-extension-core-ci-images
+  - get: git-repo
+    trigger: true
+  - task: pack-publish
+    image: vscode-extension-core-ci-image
+    file: git-repo/ci/tasks/vscode-extension-core-publish.yml
+    params:
+      BUILD_NAME: ((build-name))
+    on_success:
+      put: vscode-extension-core-trigger
+      params:
+        file: triggers/((build-name))/*
