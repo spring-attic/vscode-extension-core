@@ -27,14 +27,14 @@
     "publish:next": "npm version $(semver $npm_package_version)-next.$(git rev-parse --short HEAD) -no-git-tag-version && npm pack && npm publish pivotal-tools-vscode-extension-core-$(semver $npm_package_version)-next.$(git rev-parse --short HEAD).tgz --tag next --registry https://repo.spring.io/api/npm/npm-snapshot-local && npm version $(semver $npm_package_version) -no-git-tag-version"
   },
   "dependencies": {
-    "reflect-metadata": "^0.1.13",
-    "vscode-languageclient": "^5.2.1"
+    "reflect-metadata": "0.1.13",
+    "vscode-languageclient": "5.2.1"
   },
   "devDependencies": {
-    "@types/keytar": "^4.4.0",
-    "@types/node": "^7.0.43",
-    "@types/vscode": "^1.37.0",
-    "typescript": "^3.3.1",
-    "vscode-test": "^1.2.0"
+    "@types/keytar": "4.4.0",
+    "@types/node": "7.10.7",
+    "@types/vscode": "1.37.0",
+    "typescript": "3.6.4",
+    "vscode-test": "1.2.0"
   }
 }
