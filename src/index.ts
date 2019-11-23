@@ -25,3 +25,4 @@ export * from './ui/status-bar-manager';
 export * from './ui/notification-manager';
 export * from './ui/output-manager';
 export * from './ui/read-only-document-manager';
+export * from './env/java-finder';

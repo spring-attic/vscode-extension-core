@@ -18,5 +18,6 @@ import { LanguageClient } from 'vscode-languageclient';
 export interface LanguageSupport {
 
     getLanguageIds(): string[];
-    buildLanguageClient(): LanguageClient;
+
+    buildLanguageClient(): Thenable<LanguageClient>;
 }

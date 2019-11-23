@@ -14,39 +14,80 @@
  * limitations under the License.
  */
 import { ExtensionContext } from "vscode";
-import { LanguageClient } from "vscode-languageclient";
+import { LanguageClient, Disposable } from "vscode-languageclient";
 import { LanguageSupport } from "./language-support";
 import { NotificationManager } from "../ui/notification-manager";
 
 export class LanguageServerManager {
 
-    private clients: Map<string, LanguageClient> = new Map();
+    private clients: Map<string[], LanguageClientHolder> = new Map();
 
     constructor(
         private context: ExtensionContext,
-        languageSupports: LanguageSupport[] = [],
+        private languageSupports: LanguageSupport[] = [],
         private notificationManager: NotificationManager
-    ){
-        languageSupports.forEach(ls => {
-            const lc = ls.buildLanguageClient();
-            ls.getLanguageIds().forEach(li => {
-                this.clients.set(li, lc);
-            });
+    ) {}
+
+    public async start(): Promise<void> {
+        const promises = this.languageSupports.map(async ls => {
+            const lc = await ls.buildLanguageClient();
+            const lch: LanguageClientHolder = { client: lc };
+            this.clients.set(ls.getLanguageIds(), lch);
             this.notificationManager.showMessage('Starting Language Support for ' + ls.getLanguageIds().join(','));
             const disposable = lc.start();
+            lch.disposable = disposable;
             this.context.subscriptions.push(disposable);
         });
+        await Promise.all(promises);
     }
 
     public getLanguageClient(languageId: string): LanguageClient {
-        const lc = this.clients.get(languageId);
+        let lc: LanguageClient | undefined;
+        this.clients.forEach( (v,k) => {
+            if ( k.some( i => i === languageId) ) {
+                lc = v.client;
+            }
+        } );
+
         if (lc) {
             return lc;
         }
         throw new Error();
     }
 
-    public getLanguageClients():LanguageClient[] {
-        return [...this.clients.values()];
+    public async restart(languageId: string): Promise<void> {
+        let lch: LanguageClientHolder | undefined;
+        this.clients.forEach((v,k) => {
+            if ( k.some( i => i === languageId) ) {
+                lch = v;
+            }
+        });
+        if (lch) {
+            await lch.client.stop();
+            if (lch.disposable) {
+                lch.disposable.dispose();
+            }
+            this.languageSupports.forEach(async ls => {
+                if (lch) {
+                    if (ls.getLanguageIds().some(i => i === languageId)) {
+                        const lc = await ls.buildLanguageClient();
+                        this.notificationManager.showMessage('Starting Language Support for ' + ls.getLanguageIds().join(','));
+                        const disposable = lc.start();
+                        lch.client = lc;
+                        lch.disposable = disposable;
+                        this.context.subscriptions.push(disposable);
+                    }
+                }
+            });
+        }
     }
+
+    public getLanguageClients():LanguageClient[] {
+        return [...this.clients.values()].map(v => v.client);
+    }
+}
+
+interface LanguageClientHolder {
+    client: LanguageClient;
+    disposable?: Disposable;
 }
