@@ -24,7 +24,7 @@
     "prepack": "npm run compile",
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",
-    "publish:next": "npm version $(semver $npm_package_version)-next.$(git rev-parse --short HEAD) -no-git-tag-version && npm pack && npm publish pivotal-tools-vscode-extension-core-$(semver $npm_package_version)-next.$(git rev-parse --short HEAD).tgz --tag next --registry https://repo.spring.io/api/npm/npm-snapshot-local && npm version $(semver $npm_package_version) -no-git-tag-version"
+    "publish:next": "export postfix=$(date '+%Y%m%d.%H%M%S') && npm version $(semver $npm_package_version)-next.$(git rev-parse --short HEAD).$postfix -no-git-tag-version && npm pack && npm publish pivotal-tools-vscode-extension-core-$(semver $npm_package_version)-next.$(git rev-parse --short HEAD).$postfix.tgz --tag next --registry https://repo.spring.io/api/npm/npm-snapshot-local && npm version $(semver $npm_package_version) -no-git-tag-version"
   },
   "dependencies": {
     "find-java-home": "1.1.0",
