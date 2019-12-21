@@ -60,6 +60,19 @@ export class OutputManager {
     }
 
     /**
+     * Appends a new text for a given output channel. Will not clear or
+     * force exposing it to a user.
+     *
+     * @param key the channel identifier
+     * @param text the text to get replaced in an output
+     * @param tags the tags for newly created channel
+     */
+    public appendText(key: string, text: string, tags?: string[]): void {
+        const output = this.getOutput(key, tags);
+        output.append(text);
+    }
+
+    /**
      * Disposes all existing channels and clears those out from an
      * existing internal associations for a channel keys. After
      * calling this method we're effectively back to state when this

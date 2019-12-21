@@ -14,32 +14,103 @@
  * limitations under the License.
  */
 import { window, workspace } from 'vscode';
+import { OutputManager } from './output-manager';
+
+/**
+ * Enumeration of a possible locations for notifications.
+ */
+export enum Location {
+    Notifications = 'notifications',
+    Statusbar = 'statusbar',
+    Log = 'log'
+}
+
+/**
+ * Message with a level.
+ */
+export interface Message {
+    text: string;
+    level?: Level;
+}
+
+/**
+ * Enumeration of a levels for a messages.
+ */
+export enum Level {
+    Trace = 0,
+    Info = 1,
+    Warn = 2,
+    Error = 3
+}
 
 /**
  * Simplifies to show notifications in a central way.
  */
 export class NotificationManager {
 
-    private location: string|undefined;
+    private location: Location | undefined;
+    private level: Level | undefined = Level.Info;
 
     constructor(
-        locationKey: string|undefined
+        private outputManager: OutputManager | undefined,
+        locationKey: string | undefined,
+        levelKey: string | undefined,
+        private outputKey: string | undefined,
+        private outputTag: string | undefined
     ){
         if (locationKey) {
-            this.location = workspace.getConfiguration().get<string>(locationKey);
+            this.location = workspace.getConfiguration().get<Location>(locationKey);
             workspace.onDidChangeConfiguration(e => {
                 if (e.affectsConfiguration(locationKey)) {
-                    this.location = workspace.getConfiguration().get<string>(locationKey);
+                    this.location = workspace.getConfiguration().get<Location>(locationKey);
+                }
+            });
+        }
+        if (levelKey) {
+            this.level = workspace.getConfiguration().get<Level>(levelKey);
+            workspace.onDidChangeConfiguration(e => {
+                if (e.affectsConfiguration(levelKey)) {
+                    this.level = workspace.getConfiguration().get<Level>(levelKey);
                 }
             });
         }
     }
 
-    public showMessage(text: string): void {
-        if (this.location === 'notifications') {
-            window.showInformationMessage(text);
-        } else if (this.location === 'statusbar') {
-            window.setStatusBarMessage(text, 5000);
+    /**
+     * Dispatch message for notification handling.
+     *
+     * @param message the message
+     */
+    public message(message: Message): void {
+        const lev = message.level ? message.level : Level.Info;
+        if (this.level && lev < this.level) {
+            return;
         }
+        if (this.location === Location.Notifications) {
+            window.showInformationMessage(message.text);
+        } else if (this.location === Location.Statusbar) {
+            window.setStatusBarMessage(message.text, 5000);
+        } else if (this.location === Location.Log) {
+            if (this.outputManager && this.outputKey && this.outputTag) {
+                const time = new Date().toLocaleTimeString();
+                const levelName = Object.keys(Level).find(key => Level[key] === lev.valueOf());
+                const msg = `${time} - ${levelName} - ${message.text}\n`;
+                this.outputManager.appendText(this.outputKey, msg, [this.outputTag]);
+            }
+        }
+    }
+
+    /**
+     * Dispatch message for notification handling. Internally delegating
+     * to message handling with Info level.
+     *
+     * @param text the text
+     * @deprecated will get removed in favour of message(Message)
+     */
+    public showMessage(text: string): void {
+        this.message({
+            text: text,
+            level: Level.Info
+        });
     }
 }
