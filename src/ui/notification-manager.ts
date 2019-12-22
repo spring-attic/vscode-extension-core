@@ -102,15 +102,57 @@ export class NotificationManager {
 
     /**
      * Dispatch message for notification handling. Internally delegating
+     * to message handling with Trace level.
+     *
+     * @param text the text
+     * @deprecated will get removed in favour of message(Message)
+     */
+    public trace(text: string): void {
+        this.message({
+            text: text,
+            level: Level.Trace
+        });
+    }
+
+    /**
+     * Dispatch message for notification handling. Internally delegating
+     * to message handling with Warn level.
+     *
+     * @param text the text
+     * @deprecated will get removed in favour of message(Message)
+     */
+    public warn(text: string): void {
+        this.message({
+            text: text,
+            level: Level.Warn
+        });
+    }
+
+    /**
+     * Dispatch message for notification handling. Internally delegating
      * to message handling with Info level.
      *
      * @param text the text
      * @deprecated will get removed in favour of message(Message)
      */
-    public showMessage(text: string): void {
+    public info(text: string): void {
         this.message({
             text: text,
             level: Level.Info
+        });
+    }
+
+    /**
+     * Dispatch message for notification handling. Internally delegating
+     * to message handling with Info level.
+     *
+     * @param text the text
+     * @deprecated will get removed in favour of message(Message)
+     */
+    public error(text: string): void {
+        this.message({
+            text: text,
+            level: Level.Error
         });
     }
 }
