@@ -33,7 +33,7 @@ export class LanguageServerManager {
             const lc = await ls.buildLanguageClient();
             const lch: LanguageClientHolder = { client: lc };
             this.clients.set(ls.getLanguageIds(), lch);
-            this.notificationManager.showMessage('Starting Language Support for ' + ls.getLanguageIds().join(','));
+            this.notificationManager.info('Starting Language Support for ' + ls.getLanguageIds().join(','));
             const disposable = lc.start();
             lch.disposable = disposable;
             this.context.subscriptions.push(disposable);
@@ -71,7 +71,7 @@ export class LanguageServerManager {
                 if (lch) {
                     if (ls.getLanguageIds().some(i => i === languageId)) {
                         const lc = await ls.buildLanguageClient();
-                        this.notificationManager.showMessage('Starting Language Support for ' + ls.getLanguageIds().join(','));
+                        this.notificationManager.info('Starting Language Support for ' + ls.getLanguageIds().join(','));
                         const disposable = lc.start();
                         lch.client = lc;
                         lch.disposable = disposable;
