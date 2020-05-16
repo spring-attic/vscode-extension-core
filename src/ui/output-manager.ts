@@ -80,6 +80,7 @@ export class OutputManager {
      */
     public disposeAll(): void {
         this.outputs.forEach((taggedChannel, key) => {
+            taggedChannel.channel.clear();
             taggedChannel.channel.dispose();
             this.outputs.delete(key);
         });
@@ -94,6 +95,7 @@ export class OutputManager {
         this.outputs.forEach((taggedChannel, key) => {
             const found = taggedChannel.tags.some(tag => tags.includes(tag));
             if (found) {
+                taggedChannel.channel.clear();
                 taggedChannel.channel.dispose();
                 this.outputs.delete(key);
             }
